@@ -1,0 +1,22 @@
+ARRI MXF Recovery Tool - Quick Start
+====================================
+
+TO RUN THE TOOL:
+
+macOS/Linux:
+  Double-click: START_RECOVERY_TOOL.sh
+  Or in Terminal: ./START_RECOVERY_TOOL.sh
+
+Windows:
+  Double-click: START_RECOVERY_TOOL.bat
+
+USAGE:
+1. Click "Select Clip" to choose an MXF file
+2. Click "Start Recovery" to recover the file
+3. Recovered file will be saved as *_recovered.mxf
+
+REQUIREMENTS:
+- Python 3 with tkinter (usually pre-installed on macOS)
+- For Linux: may need to install python3-tk package
+
+For detailed information, see README.md

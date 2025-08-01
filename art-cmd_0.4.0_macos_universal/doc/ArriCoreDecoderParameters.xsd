@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="urn:ARRI:Metadata:ArriImageSdk" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:ARRI:Metadata:ArriImageSdk" elementFormDefault="qualified">
+  <xs:simpleType name="CCT">
+    <xs:restriction base="xs:unsignedInt">
+      <xs:minInclusive value="2000"/>
+      <xs:maxInclusive value="11000"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:annotation/>
+  <xs:complexType name="ArriCoreDecoderParameters">
+    <xs:sequence>
+      <xs:element name="proxyMode" minOccurs="0" default="none">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="none">
+              <xs:annotation>
+                <xs:documentation>No proxy rendering will be applied and the image will be rendered to the full resolution of 'displayWidth' * 'displayHeight' read from the static 'ArriCorePictureTrackDescriptor'.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="fullBase">
+              <xs:annotation>
+                <xs:documentation>Full core image will be rendered to the resolution of 'sampledBaseImageWidth' * 'sampledBaseImageHeight' read from the static 'ArriCorePictureTrackDescriptor'.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="halfBase">
+              <xs:annotation>
+                <xs:documentation>Half-sized core image will be rendered to the resolution of ('sampledBaseImageWidth'/2 * 'sampledBaseImageHeight'/2) read from the static 'ArriCorePictureTrackDescriptor' is applied in each direction. No additional rescaling by setting 'outputScaling' parameters will be allowed when using this mode.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="quarterBase">
+              <xs:annotation>
+                <xs:documentation>Quarter-sized core image will be rendered to the resolution of ('sampledBaseImageWidth'/4 * 'sampledBaseImageHeight'/4) read from the static 'ArriCorePictureTrackDescriptor' is applied in each direction. No additional rescaling by setting 'outputScaling' parameters will be allowed when using this mode.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="inputCrop" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Overrides the actual display rectangle that will be decoded. When not specified ArriCoreDecoder will decode original display rectangle.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="displayXOffsetOverride" type="xs:nonNegativeInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Overrides displayXOffset of the input image metadata. Setting this value effectively moves the display rectangle within the sampled one horizontally. See SMPTE 377-1:2011, G.2.15.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="displayYOffsetOverride" type="xs:nonNegativeInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Overrides displayYOffset of the input image metadata. Setting this value effectively moves the display rectangle within the sampled one vertically. See SMPTE 377-1:2011, G.2.16.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="displayWidthOverride" type="xs:positiveInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Overrides displayWidth of the input image metadata. Setting this value effectively moves the right edge of the display rectangle horizontally. See SMPTE 377-1:2011, G.2.13.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="displayHeightOverride" type="xs:positiveInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Overrides displayHeight of the input image metadata. Setting this value effectively moves the bottom edge of the display rectangle vertically. See SMPTE 377-1:2011, G.2.14.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="colorTemperatureOverride" minOccurs="0" type="CCT">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Sets correlated color temperature to be applied.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="tintOverride" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Sets Green/Magenta Tint to be applied.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:float">
+            <xs:minInclusive value="-16.0"/>
+            <xs:maxInclusive value="+16.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="exposureIndexOverride" minOccurs="0" type="xs:positiveInteger">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Sets input exposure index value in ASA to be applied.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="outputScaling" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Defines the output image dimensions used to configure ArriCoreDecoder scaler</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="targetWidth" type="xs:positiveInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Output image width that the input display rectangle will be scaled to (before a potential inputCrop).</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="targetHeight" type="xs:positiveInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Output image height that the input display rectangle will be scaled to (before a potential inputCrop).</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="applyFlip" type="xs:boolean" minOccurs="0" default="false">
+        <xs:annotation>
+          <xs:documentation>Flip the recorded image (mirrored up down).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="applyFlop" type="xs:boolean" minOccurs="0" default="false">
+        <xs:annotation>
+          <xs:documentation>Flop the recorded image (mirrored left right).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="arriCoreDecoderParameters" type="ArriCoreDecoderParameters"/>
+</xs:schema>

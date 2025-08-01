@@ -1,0 +1,280 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://www.arri.com/schema/json/art/parameters/v1-0-0",
+    "$comment": "Parameters shared by art-cmd and art-qt",
+    "title": "Parameters",
+    "description": "Parameters for processing ARRIRAW, ARRICORE or RGB video data.",
+    "type": "object",
+    "properties": {
+        "inputCrop": {
+            "title": "Input Crop",
+            "description": "ARRIRAW and ARRICORE: Rectangle within the sampled area of the input image data to be processed.",
+            "type": "object",
+            "properties": {
+                "displayXOffsetOverride": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "displayYOffsetOverride": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "displayWidthOverride": {
+                    "type": "integer",
+                    "minimum": 4
+                },
+                "displayHeightOverride": {
+                    "type": "integer",
+                    "minimum": 4
+                }
+            },
+            "required": [
+                "displayXOffsetOverride",
+                "displayYOffsetOverride",
+                "displayWidthOverride",
+                "displayHeightOverride"
+            ]
+        },
+        "outputScaling": {
+            "title": "Output Scaling",
+            "description": "ARRIRAW and ARRICORE",
+            "type": "object",
+            "properties": {
+                "targetWidth": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 8192
+                },
+                "targetHeight": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 8192
+                }
+            },
+            "required": [
+                "targetWidth",
+                "targetHeight"
+            ]
+        },
+        "fitAspectMode": {
+            "type": "string",
+            "description": "ARRIRAW and ARRICORE",
+            "default": "none",
+            "oneOf": [
+                {
+                    "const": "none"
+                },
+                {
+                    "const": "boxed"
+                },
+                {
+                    "const": "cropped"
+                }
+            ]
+        },
+        "lensSqueezeOverride": {
+            "description": "ARRIRAW and ARRICORE",
+            "type": "number",
+            "default": 1.0
+        },
+        "applyFlip": {
+            "description": "ARRIRAW and ARRICORE",
+            "type": "boolean",
+            "default": false
+        },
+        "applyFlop": {
+            "description": "ARRIRAW and ARRICORE",
+            "type": "boolean",
+            "default": false
+        },
+        "exposureIndexOverride": {
+            "description": "ARRIRAW and ARRICORE",
+            "type": "integer",
+            "minimum": 160,
+            "maximum": 6400
+        },
+        "colorTemperatureOverride": {
+            "description": "ARRIRAW and ARRICORE",
+            "type": "integer",
+            "minimum": 2000,
+            "maximum": 11000
+        },
+        "tintOverride": {
+            "description": "ARRIRAW and ARRICORE",
+            "type": "number",
+            "minimum": -16.0,
+            "maximum": 16.0
+        },
+        "debayer": {
+            "description": "ARRIRAW only",
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "const": "ADA5HW"
+                        },
+                        {
+                            "const": "ADA5SW"
+                        },
+                        {
+                            "const": "ADA7HW"
+                        },
+                        {
+                            "const": "ADA7SW"
+                        },
+                        {
+                            "const": "proxy4x4"
+                        }
+                    ]
+                },
+                "ada5SwParams": {
+                    "type": "object",
+                    "properties": {
+                        "finetuneRed": {
+                            "type": "integer",
+                            "default": 100,
+                            "minimum": 0,
+                            "maximum": 100
+                        },
+                        "finetuneGreen": {
+                            "type": "integer",
+                            "default": 100,
+                            "minimum": 0,
+                            "maximum": 100
+                        },
+                        "finetuneBlue": {
+                            "type": "integer",
+                            "default": 50,
+                            "minimum": 0,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [
+                        "finetuneRed",
+                        "finetuneGreen",
+                        "finetuneBlue"
+                    ]
+                }
+            },
+            "required": [
+                "mode"
+            ]
+        },
+        "inputBinning": {
+            "description": "ARRIRAW only",
+            "type": "string",
+            "default": "off",
+            "oneOf": [
+                {
+                    "const": "off"
+                },
+                {
+                    "const": "bin2x2"
+                },
+                {
+                    "const": "bin4x4"
+                }
+            ]
+        },
+        "userPixelMask": {
+            "description": "ARRIRAW only",
+            "type": "object",
+            "properties": {
+                "pixelCoordinate": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "xPos": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "yPos": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "required": [
+                            "xPos",
+                            "yPos"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "pixelCoordinate"
+            ]
+        },
+        "textureGen1Override": {
+            "description": "ARRIRAW only",
+            "type": "object",
+            "properties": {
+                "noiseReductionModeOverride": {
+                    "type": "string",
+                    "default": "off",
+                    "oneOf": [
+                        {
+                            "const": "off"
+                        },
+                        {
+                            "const": "anr1"
+                        },
+                        {
+                            "const": "anr2"
+                        }
+                    ]
+                },
+                "noiseReductionStrengthOverride": {
+                    "type": "number",
+                    "minimum": 1.0,
+                    "maximum": 3.5
+                },
+                "sharpnessOverride": {
+                    "type": "number",
+                    "minimum": -5.0,
+                    "maximum": 35.0
+                },
+                "detailOverride": {
+                    "type": "number",
+                    "minimum": -5.0,
+                    "maximum": 5.0
+                }
+            }
+        },
+        "transferCurveOverride": {
+            "description": "ARRIRAW only",
+            "type": "string",
+            "oneOf": [
+                {
+                    "const": "LogC3"
+                },
+                {
+                    "const": "LogC4"
+                }
+            ]
+        },
+        "proxyMode": {
+            "description": "ARRICORE only",
+            "type": "string",
+            "default": "none",
+            "oneOf": [
+                {
+                    "const": "none"
+                },
+                {
+                    "const": "fullBase"
+                },
+                {
+                    "const": "halfBase"
+                },
+                {
+                    "const": "quarterBase"
+                }
+            ]
+        }
+    },
+    "unevaluatedProperties": false,
+    "additionalProperties": false
+}

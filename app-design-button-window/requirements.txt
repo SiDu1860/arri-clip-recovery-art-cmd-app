@@ -1,0 +1,12 @@
+# No external dependencies required
+# This application uses only Python standard library modules:
+# - tkinter (included with Python)
+# - subprocess
+# - threading
+# - pathlib
+# - platform
+# - os
+# - sys
+
+# For creating standalone executables, use:
+# pip install pyinstaller

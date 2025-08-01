@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="urn:ARRI:Metadata:ArriImageSdk" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:ARRI:Metadata:ArriImageSdk" elementFormDefault="qualified">
+  <xs:simpleType name="CCT">
+    <xs:restriction base="xs:unsignedInt">
+      <xs:minInclusive value="2000"/>
+      <xs:maxInclusive value="11000"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TransferCurve">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">Transfer curve</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="BT.1886"/>
+      <xs:enumeration value="DCI"/>
+      <xs:enumeration value="PQ"/>
+      <xs:enumeration value="HLG"/>
+      <xs:enumeration value="LogC3"/>
+      <xs:enumeration value="LogC4"/>
+      <xs:enumeration value="linear"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:annotation/>
+  <xs:simpleType name="ADA5SWFinetuneParam">
+    <xs:restriction base="xs:unsignedInt">
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Debayer">
+    <xs:sequence>
+      <xs:element name="mode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="ADA5SW">
+              <xs:annotation>
+                <xs:documentation>ARRI debayer algorithm software version 5. The algorithm is applicable only to ARRIRAW footage produced by ImageProcessingModel Gen1/Gen2 cameras.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ADA5HW">
+              <xs:annotation>
+                <xs:documentation>ARRI debayer algorithm version 5 as it is done by the camera hardware. The algorithm is applicable only to ARRIRAW footage produced by ImageProcessingModel Gen1/Gen2 cameras.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ADA7HW">
+              <xs:annotation>
+                <xs:documentation>ARRI debayer algorithm version 7 as it is done by the camera hardware.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ADA7SW">
+              <xs:annotation>
+                <xs:documentation>ARRI debayer algorithm software version 7. The algorithm is applicable only to ARRIRAW footage</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="proxy4x4">
+              <xs:annotation>
+                <xs:documentation>ARRI debayer algorithm with integrated 4x4 proxy, reducing raw image area to 1/16. Shall be displayed as 'Quarter Proxy HQ' in a GUI.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ADA5SWParams" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="finetuneRed" type="ADA5SWFinetuneParam" default="100">
+              <xs:annotation>
+                <xs:documentation>Debayer fine tuning for the weight of red channel.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="finetuneGreen" type="ADA5SWFinetuneParam" default="100">
+              <xs:annotation>
+                <xs:documentation>Debayer fine tuning for the weight of green channel</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="finetuneBlue" type="ADA5SWFinetuneParam" default="50">
+              <xs:annotation>
+                <xs:documentation>Debayer fine tuning for the weight of blue channel</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PixelCoordinate">
+    <xs:sequence>
+      <xs:element name="xPos" type="xs:nonNegativeInteger">
+        <xs:annotation>
+          <xs:documentation>Horizontal pixel count from left edge of stored image rectangle.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="yPos" type="xs:nonNegativeInteger">
+        <xs:annotation>
+          <xs:documentation>Vertical pixel count from top edge of stored image rectangle.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UserPixelMask">
+    <xs:annotation>
+      <xs:documentation>A list of pixel coordinates to be masked, relative to the top left corner of the
+                stored image rectangle.
+            </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="pixelCoordinate" maxOccurs="unbounded" type="PixelCoordinate"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArriRawDecoderParameters">
+    <xs:sequence>
+      <xs:element name="debayer" minOccurs="0" type="Debayer">
+        <xs:annotation>
+          <xs:documentation>Debayering algorithm to be used</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="inputCrop" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Overrides the actual display rectangle that will be decoded. When not specified ArriRawDecoder will decode original display rectangle.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="displayXOffsetOverride" type="xs:nonNegativeInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Overrides displayXOffset of the input image metadata. Setting this value effectively moves the display rectangle within the sampled one horizontally. See SMPTE 377-1:2011, G.2.15.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="displayYOffsetOverride" type="xs:nonNegativeInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Overrides displayYOffset of the input image metadata. Setting this value effectively moves the display rectangle within the sampled one vertically. See SMPTE 377-1:2011, G.2.16.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="displayWidthOverride" type="xs:positiveInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Overrides displayWidth of the input image metadata. Setting this value effectively moves the right edge of the display rectangle horizontally. See SMPTE 377-1:2011, G.2.13.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="displayHeightOverride" type="xs:positiveInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Overrides displayHeight of the input image metadata. Setting this value effectively moves the bottom edge of the display rectangle vertically. See SMPTE 377-1:2011, G.2.14.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="outputScaling" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Defines the output image dimensions used to configure ArriRawDecoder scaler</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="targetWidth" type="xs:positiveInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Output image width that the input display rectangle will be scaled to.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="targetHeight" type="xs:positiveInteger">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Output image height that the input display rectangle will be scaled to.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="applyFlip" type="xs:boolean" minOccurs="0" default="false">
+        <xs:annotation>
+          <xs:documentation>Flip the recorded image (mirrored up down).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="applyFlop" type="xs:boolean" minOccurs="0" default="false">
+        <xs:annotation>
+          <xs:documentation>Flop the recorded image (mirrored left right).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="textureGen1Override" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Texture processing parameters for cameras up to ALEXA Mini LF.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="noiseReductionModeOverride">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">
+Noise reduction mode
+
+This item describes if noise reduction was enabled in camera.
+
+&gt; Note that this setting does not specify whether noise reduction has been applied to a given output. Refer to [Texture Applied](#textureApplied) instead.
+
+        </xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:token">
+                  <xs:enumeration value="off">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="en">no noise reduction</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                  <xs:enumeration value="ANR-1">
+                    <xs:annotation>
+                      <xs:documentation xml:lang="en">ARRI Noise Reduction v1</xs:documentation>
+                    </xs:annotation>
+                  </xs:enumeration>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element minOccurs="0" name="noiseReductionStrengthOverride" default="2.5">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">ANR-1 noise reduction strength</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:float">
+                  <xs:minInclusive value="1.0"/>
+                  <xs:maxInclusive value="3.5"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element minOccurs="0" name="sharpnessOverride">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Amount of image sharpness</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:float">
+                  <xs:minInclusive value="-5.0"/>
+                  <xs:maxInclusive value="+35.0"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element minOccurs="0" name="detailOverride">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Amount of image detail</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:float">
+                  <xs:minInclusive value="-5.0"/>
+                  <xs:maxInclusive value="+5.0"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="colorTemperatureOverride" minOccurs="0" type="CCT">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Overrides correlated color temperature to be applied.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="tintOverride" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Overrides Green/Magenta Tint to be applied.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:float">
+            <xs:minInclusive value="-16.0"/>
+            <xs:maxInclusive value="+16.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="exposureIndexOverride" minOccurs="0" type="xs:positiveInteger">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">Overrides input exposure index value in ASA to be applied.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="transferCurveOverride" minOccurs="0" type="TransferCurve">
+        <xs:annotation>
+          <xs:documentation>Desired encoding of the image resulting from the application of the processing descriptor. Can either be 'LogC4', rendering to LogC4/D65/AWG4 colorspace or 'LogC3', rendering to LogC3/D65/AWG3 colorspace. LogC3 is the default for material with PictureEssenceCoding *arriraw_uncompressed_12bit* or *arriraw_uncompressed_12bit_reverse* and only valid for those. LogC4 is the default for the latest PictureEssenceCoding *arriraw_uncompressed_13bit*.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="inputBinning" minOccurs="0" default="off">
+        <xs:annotation>
+          <xs:documentation>Binning of input pixels to be applied.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="off">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">Input binning off.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="2x2">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">2x2 binning for standard proxy rendering, reducing raw image area to 1/4.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="4x4">
+              <xs:annotation>
+                <xs:documentation xml:lang="en">4x4 binning for fast proxy rendering, reducing raw image area to 1/16.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="userPixelMask" minOccurs="0" type="UserPixelMask">
+        <xs:annotation>
+          <xs:documentation>User pixel correction to be applied.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="userPixelMask" type="UserPixelMask"/>
+  <xs:element name="arriRawDecoderParameters" type="ArriRawDecoderParameters"/>
+</xs:schema>

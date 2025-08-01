@@ -1,0 +1,194 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "recipe": {
+        "properties": {
+            "start": {
+                "type": "integer",
+                "default": 0,
+                "description": "Start frame number to be read from 'input'. \n
+                                Valid in every mode."
+            },
+            "duration": {
+                "type": "integer",
+                "default": -1,
+                "description": "Duration in frames to be read from 'input' beginning from 'start'. Default: all frames\n
+                                Valid in every mode."
+            },
+
+            "parameters": {
+                "type": "string",
+                "description": "JSON or XML file containing parameters for ARRIRAW and/or -CORE decoding (according to the
+                                'parameters.schema.json', 'ArriRawDecoderParameters.xsd' or 'ArriCoreDecoderParameters.xsd'\n
+                                schema).\n
+                                Without parameters, the ARRIRAW or ARRICORE 'input' will by default be\n
+                                decoded to colors in 'AWG3/D65/LogC3' (ALEXA Mini LF or older)\n
+                                or 'AWG4/D65/LogC4' (ALEXA 35 or newer).\n
+                                Valid only in 'process' mode, applicable only to ARRIRAW and -CORE input clips."
+            },
+
+            "deflip": {
+                "type": "boolean",
+                "default": false,
+                "description": "Applies a flip and/or flop according to camera metadata of the 'input'.\n
+                                Valid only in 'process' mode, applicable only to ARRIRAW and -CORE input clips."
+            },
+            "desqueeze": {
+                "type": "boolean",
+                "default": false,
+                "description": "Applies a desqueeze according to lens metadata of the 'input'.\n
+                                Valid only in 'process' mode, applicable only to ARRIRAW and -CORE input clips."
+            },
+
+            "embedded-look": {
+                "type": "boolean",
+                "default": false,
+                "description": "Applies the look embedded in an 'input' clip if present. In case no look is found,
+                                post LogC3/4 processing will be skipped.\n
+                                Valid only in 'process' mode, applicable with ARRIRAW and -CORE and ProRes input clips."
+            },
+
+            "arri-look-file": {
+                "type": "string",
+                "description": "Applies a look from an ARRI Look File. Can be:\n
+                                *.aml (LogC3-Look LUT, ALEXA Mini LF or older)\n
+                                *.alf4 (LogC4-Look LUT, ALEXA 35 or newer)\n
+                                *.alf4c (LogC4-Look LUT and/or custom DRT to SDR or HDR, ALEXA 35 SUP 1.2.1 or newer)\n
+                                In case look file is not applicable to the 'input' clip, processing will be skipped.\n
+                                Valid only in 'process' mode, applicable with ARRIRAW and -CORE and ProRes input clips."
+            },
+            "target-colorspace": {
+                "type": "string",
+                "description": "Target colorspace selection. Possible values are:\n
+                                Free selection of target colorspace only possible without look.\n
+                                Supposed to be used together with an *.alf4c custom 'arri-look-file' to select between
+                                SDR- or HDR-DRT.\n
+                                Valid only in 'process' mode, applicable with ARRIRAW and -CORE and ProRes input clips.\n
+                                Depending on the given input and recipe, valid choices will be a subset of:\n
+                                'AP0/D60/linear'\n
+                                'AWG4/D65/linear'\n
+                                'AWG4/D65/LogC4'\n
+                                'AWG3/D65/linear'\n
+                                'AWG3/D65/LogC3'\n
+                                'P3/D60/DCI'\n
+                                'P3/D65/DCI'\n
+                                'P3/D65/PQ'\n
+                                'P3/DCI/DCI'\n
+                                'Rec.2020/D65/BT.1886'\n
+                                'Rec.2020/D65/HLG'\n
+                                'Rec.2020/D65/PQ'\n
+                                'Rec.709/D65/BT.1886'."
+            },
+
+            "video-codec": {
+                "type": "string",
+                "description": "Codec used to encode video data written to the 'output' clip. Supported are:\n
+                                For 'output' to *.exr (defaults to exr_uncompressed/f16): 'exr_uncompressed/f16',\n
+                                \t'exr_piz/f16','exr_zip/f16', 'exr_zips/f16', 'exr_b44a_lossy/f16', \n
+                                \t'exr_uncompressed/f32', 'exr_piz/f32','exr_zip/f32', 'exr_zips/f32', \n
+                                \t'exr_b44a_lossy/f32'.\n
+                                For 'output' to *.mxf: 'prores422lt', 'prores422', 'prores422hq', 'prores4444',\n
+                                \t'prores4444xq'.\n
+                                Valid only in 'process' mode, applicable with ARRIRAW and -CORE and ProRes input
+                                clips."
+            },
+            
+            "letterbox-size": {
+                "type": "string",
+                "description": "Dimensions of the final (letter-boxed) target image in the form '<width>x<height>'.\n
+                                The original aspect ratio of the (cropped) input image will be kept. Lens de-squeeze needs to be selected additionally, if desired."
+            },
+            "skip-metadata": {
+                "type": "boolean",
+                "default": false,
+                "description": "Flag to skip verification of metadata in 'metadata.json' in the given
+                                'output' directory.\n
+                                Valid in 'verify' mode, applicable with ARRIRAW and -CORE and ProRes input clips."
+            },
+            "skip-video": {
+                "type": "boolean",
+                "default": false,
+                "description": "Flag to skip verification of video files 'video_track%02d/frame%07d.bin' in the
+                                given 'output' directory.\n
+                                Valid in 'verify' mode, applicable with ARRIRAW and -CORE and ProRes input clips."
+            },
+            "skip-audio": {
+                "type": "boolean",
+                "default": false,
+                "description": "Flag to skip verification of audio files 'audio_track%02d/frame%07d.bin' in the
+                                given 'output' directory.\n
+                                Valid in 'verify' mode, applicable with ARRIRAW and -CORE and ProRes input clips."
+            }
+        },
+        "unevaluatedProperties": false,
+        "additionalProperties": false
+    },
+    "properties": {
+        "jobs": {
+            "type": "array",
+            "items": {
+                "properties": {
+                    "mode": {
+                        "type": "string",
+                        "enum": ["verify", "export", "trim", "process", "mxf-recovery"],
+                        "default": "verify",
+                        "description": "Set mode to be used. Positional argument. Possible are:\n\n
+                                        'verify': for consistency checking a single clip's video frame checksums against
+                                        the stored video frames' data or, when given two input clips, comparing video-,
+                                        audio- and metadata between them. Turning off the video-, audio- or metadata
+                                        sink will skip the corresponding comparison(s).\n\n
+                                        'export': for exporting audio (as *.wav output) or metadata (as *.json output)
+                                        from a clip input.\n\n
+                                        'trim': for trimming ARRIRAW and ARRICORE or ProRes clips to a given 'duration' in frames,
+                                        beginning from a given 'start' frame and outputting a RDD 54/55 conformant MXF
+                                        file.\n\n
+                                        'process': for processing a given 'input' from file(s) or directory, containing
+                                        ARRIRAW/HDE, ARRIRAW and -CORE or ProRes clips.\n
+                                        Without additional arguments, ARRIRAW and ARRIRAW/HDE clips are processed to
+                                        LogC3- or LogC4-encoded video data.\n
+                                        ARRIRAW and -CORE or ProRes clips containing LogC3- or LogC4-encoded video data can be processed by
+                                        applying the 'embedded-look'.\n\n
+                                        'mxf-recovery': try to recover the mxf clip"
+                    },
+                    "input": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "description": "Path(s) to input clip(s).\n
+                                        Decimal integer printf-format specifiers, like '%07d', are supported for *.ari,
+                                        *.arx, *.json/bin and *.json/tif single frame input clips from a directory.\n
+                                        In 'process' or 'trim' mode, batch processing of all clips found in a
+                                        given input directory is supported, see the artcmd user manual for details.\n
+                                        Clips that cannot be processed are skipped and a warning is logged."
+                    },
+                    "recipe": {
+                        "$ref": "#/recipe"
+                    },
+                    "output": {
+                        "type": "string",
+                        "default": "./[mode]/",
+                        "description": "Output path. Filepath (incl. extension) or path to a directory\n
+                                        When batch processing a whole directory, the inputs' file trees are replicated
+                                        in the 'output' path that must point to a directory for multiple inputs.\n
+                                        Decimal integer printf-format specifiers, like '%07d.exr', are supported for
+                                        single frame output filepaths."
+                    }
+                },
+                "required": [
+                    "mode",
+                    "input"
+                ],
+                "unevaluatedProperties": false,
+                "additionalProperties": false
+            }
+        }
+    },
+    "required": [
+        "jobs"
+    ],
+    "unevaluatedProperties": false,
+    "additionalProperties": false
+}
