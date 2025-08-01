@@ -152,11 +152,11 @@ The tool is ready for deployment. Users can:
 
 ## Repository Information
 
-This project is hosted on GitHub at: https://github.com/[username]/arri-clip-recovery-art-cmd-app
+This project is hosted on GitHub at: https://github.com/SiDu1860/arri-clip-recovery-art-cmd-app
 
 ### Clone and Setup
 ```bash
-git clone https://github.com/[username]/arri-clip-recovery-art-cmd-app.git
+git clone https://github.com/SiDu1860/arri-clip-recovery-art-cmd-app.git
 cd arri-clip-recovery-art-cmd-app
 ./create_distribution.sh  # Create the full distribution
 ```
